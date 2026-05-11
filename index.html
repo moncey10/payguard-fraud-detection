@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PayGuard Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f1f5f9;
+  --surface:#ffffff;
+  --card:#ffffff;
+  --border:#e2e8f0;
+  --border2:#cbd5e1;
+  --red:#ef4444;
+  --red-soft:#fef2f2;
+  --red-border:#fecaca;
+  --green:#16a34a;
+  --green-soft:#f0fdf4;
+  --green-border:#bbf7d0;
+  --blue:#2563eb;
+  --blue-soft:#eff6ff;
+  --amber:#d97706;
+  --amber-soft:#fffbeb;
+  --text:#0f172a;
+  --text2:#334155;
+  --muted:#64748b;
+  --muted2:#94a3b8;
+  --sans:'Inter',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --radius:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ── LOGIN ── */
+#loginPage{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#0ea5e9 100%)}
+#loginPage::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.login-wrap{position:relative;z-index:1;width:100%;max-width:440px;padding:20px}
+.login-box{background:white;border-radius:20px;padding:40px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.login-brand-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 4px 12px rgba(29,78,216,.3)}
+.login-brand-name{font-size:1.4rem;font-weight:800;color:#0f172a}
+.login-brand-name span{color:#2563eb}
+.login-brand-tag{font-size:.65rem;font-weight:600;color:#64748b;letter-spacing:1px;margin-top:1px}
+.login-title{font-size:1.6rem;font-weight:800;color:#0f172a;margin-bottom:4px}
+.login-sub{font-size:.85rem;color:#64748b;margin-bottom:28px;font-weight:500}
+.fl{display:block;font-size:.8rem;font-weight:700;color:#334155;margin-bottom:6px}
+.fi{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-family:var(--sans);font-size:.95rem;font-weight:600;color:#0f172a;outline:none;transition:all .2s;background:#f8fafc;margin-bottom:16px}
+.fi:focus{border-color:#2563eb;background:white;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.fi::placeholder{color:#94a3b8;font-weight:400}
+.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;border-radius:10px;color:white;font-family:var(--sans);font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.3px;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.4)}
+.login-err{font-size:.82rem;font-weight:600;color:#ef4444;margin-top:12px;text-align:center;display:none;background:#fef2f2;padding:10px;border-radius:8px;border:1px solid #fecaca}
+.login-err.show{display:block}
+.login-hint{font-size:.78rem;color:#94a3b8;text-align:center;margin-top:16px;font-weight:500}
+.login-hint b{color:#2563eb}
+
+/* ── DASHBOARD ── */
+#dashboard{display:none}
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;box-shadow:var(--shadow)}
+.sb-brand{padding:20px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-brand-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.sb-brand-name{font-size:1rem;font-weight:800;color:#0f172a}
+.sb-brand-name span{color:#2563eb}
+.sb-nav{padding:12px 0;flex:1;overflow-y:auto}
+.sb-section{font-size:.68rem;font-weight:700;letter-spacing:1.5px;color:#94a3b8;padding:12px 18px 6px;text-transform:uppercase}
+.sb-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 18px;background:none;border:none;border-radius:0;color:#64748b;font-family:var(--sans);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s;text-align:left;border-left:3px solid transparent}
+.sb-btn:hover{color:#0f172a;background:#f8fafc}
+.sb-btn.active{color:#2563eb;background:#eff6ff;border-left-color:#2563eb;font-weight:700}
+.sb-icon{font-size:1rem;width:20px;text-align:center}
+.sb-bottom{padding:16px 18px;border-top:1px solid var(--border)}
+.sb-user-name{font-size:.9rem;font-weight:700;color:#0f172a}
+.sb-user-role{font-size:.7rem;font-weight:600;color:#2563eb;margin-top:2px}
+.logout-btn{margin-top:10px;width:100%;background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px;color:#64748b;font-family:var(--sans);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:#ef4444;color:#ef4444;background:#fef2f2}
+
+/* MAIN */
+.main-content{flex:1;padding:28px 32px;overflow-x:hidden;background:var(--bg)}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:1.6rem;font-weight:800;color:#0f172a;letter-spacing:-.5px}
+.page-sub{font-size:.8rem;font-weight:600;color:#64748b;margin-top:3px}
+.live-pill{display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:100px;padding:7px 14px;font-size:.75rem;font-weight:700;color:#16a34a}
+.pulse{width:7px;height:7px;border-radius:50%;background:#16a34a;animation:pulseAnim 1.5s ease infinite}
+@keyframes pulseAnim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi-icon{position:absolute;top:14px;right:14px;font-size:1.4rem;opacity:.15}
+.kpi-label{font-size:.72rem;font-weight:700;color:#64748b;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.kpi-val{font-size:2rem;font-weight:800;letter-spacing:-1px}
+.kpi.bl .kpi-val{color:#2563eb}
+.kpi.gr .kpi-val{color:#16a34a}
+.kpi.rd .kpi-val{color:#ef4444}
+.kpi.am .kpi-val{color:#d97706}
+.kpi-note{font-size:.72rem;font-weight:600;color:#94a3b8;margin-top:4px}
+.kpi.bl{border-top:3px solid #2563eb}
+.kpi.gr{border-top:3px solid #16a34a}
+.kpi.rd{border-top:3px solid #ef4444}
+.kpi.am{border-top:3px solid #d97706}
+
+/* CARDS */
+.card{background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:18px;box-shadow:var(--shadow)}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafafa}
+.card-title{font-size:.78rem;font-weight:700;color:#334155;letter-spacing:.5px;text-transform:uppercase}
+.card-action{font-size:.78rem;font-weight:700;color:#2563eb;cursor:pointer;background:none;border:none;padding:0}
+.card-action:hover{text-decoration:underline}
+
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
+.two-col-test{display:grid;grid-template-columns:1.1fr 1fr;gap:18px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{background:#f8fafc;color:#64748b;padding:10px 16px;text-align:left;font-size:.72rem;font-weight:700;letter-spacing:.5px;border-bottom:1px solid var(--border);white-space:nowrap;text-transform:uppercase}
+td{padding:12px 16px;border-bottom:1px solid #f1f5f9;font-weight:500;color:#334155;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:.72rem;font-weight:700}
+.badge.blocked{background:#fef2f2;color:#ef4444;border:1px solid #fecaca}
+.badge.cleared{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+
+/* GAUGE */
+.gauge-wrap{padding:24px 20px;text-align:center}
+.gauge-big{font-size:3rem;font-weight:800;color:#d97706;letter-spacing:-2px}
+.gauge-lbl{font-size:.78rem;font-weight:600;color:#64748b;margin-top:4px}
+.g-bar{height:8px;background:#f1f5f9;border-radius:100px;overflow:hidden;margin:16px 0 6px;border:1px solid var(--border)}
+.g-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,#16a34a,#d97706,#ef4444);transition:width 1s ease}
+.g-ticks{display:flex;justify-content:space-between;font-size:.68rem;font-weight:600;color:#94a3b8}
+
+/* MODEL ROWS */
+.m-row{display:flex;justify-content:space-between;align-items:center;padding:11px 20px;border-bottom:1px solid #f1f5f9}
+.m-row:last-child{border-bottom:none}
+.m-key{font-size:.78rem;font-weight:700;color:#64748b}
+.m-val{font-size:.82rem;font-weight:600;color:#0f172a;font-family:var(--mono)}
+
+/* LOG */
+.log-line{display:flex;align-items:flex-start;gap:12px;padding:11px 20px;border-bottom:1px solid #f1f5f9;font-size:.82rem}
+.log-line:last-child{border-bottom:none}
+.log-time{color:#94a3b8;flex-shrink:0;width:72px;font-family:var(--mono);font-weight:500;font-size:.75rem}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.log-dot.fraud{background:#ef4444;box-shadow:0 0 6px rgba(239,68,68,.4)}
+.log-dot.legit{background:#16a34a;box-shadow:0 0 6px rgba(22,163,74,.4)}
+.log-dot.system{background:#2563eb;box-shadow:0 0 6px rgba(37,99,235,.4)}
+.log-msg{color:#334155;font-weight:600;line-height:1.5}
+
+/* LIVE TEST FORM */
+.sec-label{display:flex;align-items:center;gap:8px;font-size:.75rem;font-weight:700;letter-spacing:.5px;padding:14px 20px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:#fafafa;text-transform:uppercase}
+.sec-label.user-lbl{color:#16a34a;background:#f0fdf4;border-color:#bbf7d0}
+.sec-label.backend-lbl{color:#64748b;background:#f8fafc}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding:16px 20px}
+.fg1{padding:16px 20px}
+.ff label{font-size:.75rem;font-weight:700;color:#334155;display:block;margin-bottom:6px}
+.ff input,.ff select{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-family:var(--sans);font-size:.88rem;font-weight:600;color:#0f172a;outline:none;transition:all .2s;background:white}
+.ff input:focus,.ff select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+.ff input::placeholder{color:#94a3b8;font-weight:400}
+.ff select option{font-weight:500}
+.ff input.auto,.ff select.auto{background:#f8fafc;color:#94a3b8;cursor:not-allowed;border-style:dashed;font-weight:500}
+
+.sample-strip{display:flex;gap:10px;padding:14px 20px;background:#f8fafc;border-bottom:1px solid var(--border)}
+.ss-btn{flex:1;padding:10px 14px;border-radius:9px;font-family:var(--sans);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;border:1.5px solid}
+.ss-legit{background:#f0fdf4;border-color:#86efac;color:#16a34a}
+.ss-legit:hover{background:#dcfce7;border-color:#4ade80}
+.ss-fraud{background:#fef2f2;border-color:#fca5a5;color:#ef4444}
+.ss-fraud:hover{background:#fee2e2;border-color:#f87171}
+.ss-clear{background:white;border-color:#e2e8f0;color:#64748b}
+.ss-clear:hover{background:#f1f5f9}
+
+.run-wrap{padding:16px 20px 20px}
+.run-btn{width:100%;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;border-radius:10px;padding:13px;color:white;font-family:var(--sans);font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(37,99,235,.25)}
+.run-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.35)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.run-btn.loading{pointer-events:none}
+.run-btn .btn-text{display:block}
+.run-btn .spinner{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+.run-btn.loading .btn-text{display:none}
+.run-btn.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ML GRID */
+.ml-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:14px}
+.ml-chip{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 4px;text-align:center}
+.ml-chip .mcn{font-family:var(--mono);font-size:.52rem;color:#64748b;display:block;font-weight:600}
+.ml-chip .mcv{font-family:var(--mono);font-size:.7rem;color:#2563eb;display:block;margin-top:3px;font-weight:700}
+
+/* RESULT */
+.result-box{margin:14px;border-radius:12px;padding:20px;display:none}
+.result-box.show{display:block;animation:popIn .4s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes popIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.result-box.fraud{background:#fef2f2;border:1.5px solid #fca5a5}
+.result-box.legit{background:#f0fdf4;border:1.5px solid #86efac}
+.rb-title{font-size:1.1rem;font-weight:800;margin-bottom:5px}
+.result-box.fraud .rb-title{color:#ef4444}
+.result-box.legit .rb-title{color:#16a34a}
+.rb-sub{font-size:.8rem;font-weight:600;color:#64748b;margin-bottom:14px}
+.rb-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.rb-meta-item{background:white;border:1px solid var(--border);border-radius:8px;padding:10px 12px;box-shadow:var(--shadow)}
+.rmi-label{font-size:.65rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.rmi-val{font-size:.82rem;font-weight:700;color:#0f172a}
+.prob-row{display:flex;justify-content:space-between;font-size:.75rem;font-weight:700;color:#64748b;margin-bottom:6px}
+.prob-bar{height:6px;background:#e2e8f0;border-radius:100px;overflow:hidden}
+.prob-fill{height:100%;border-radius:100px;width:0%;transition:width .8s ease}
+.result-box.fraud .prob-fill{background:linear-gradient(90deg,#f97316,#ef4444)}
+.result-box.legit .prob-fill{background:linear-gradient(90deg,#4ade80,#16a34a)}
+
+.api-box{background:#0f172a;border-radius:10px;padding:16px;font-family:var(--mono);font-size:.75rem;color:#94a3b8;white-space:pre-wrap;line-height:1.8;min-height:110px;max-height:200px;overflow-y:auto;font-weight:500}
+.api-box .ok{color:#4ade80}
+.placeholder-msg{font-size:.82rem;font-weight:600;color:#94a3b8;text-align:center;padding:28px 0}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .two-col,.two-col-test{grid-template-columns:1fr}
+  .main-content{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="login-brand">
+        <div class="login-brand-icon">🛡️</div>
+        <div>
+          <div class="login-brand-name">Pay<span>Guard</span></div>
+          <div class="login-brand-tag">ADMIN CONTROL CENTER</div>
+        </div>
+      </div>
+      <div class="login-title">Welcome back</div>
+      <div class="login-sub">Sign in to access the fraud detection dashboard</div>
+      <label class="fl">Username</label>
+      <input class="fi" id="uname" type="text" placeholder="Enter username" autocomplete="off"/>
+      <label class="fl">Password</label>
+      <input class="fi" id="upass" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <button class="login-btn" onclick="doLogin()">Sign In →</button>
+      <div class="login-err" id="loginErr">⚠ Invalid credentials. Please try again.</div>
+      <div class="login-hint">Demo credentials: <b>admin</b> / <b>admin</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sb-brand">
+        <div class="sb-brand-icon">🛡️</div>
+        <div class="sb-brand-name">Pay<span>Guard</span></div>
+      </div>
+      <div class="sb-nav">
+        <div class="sb-section">Main</div>
+        <button class="sb-btn active" id="nav-overview"     onclick="nav('overview')">    <span class="sb-icon">📊</span> Overview</button>
+        <button class="sb-btn"        id="nav-transactions" onclick="nav('transactions')"><span class="sb-icon">💳</span> Transactions</button>
+        <button class="sb-btn"        id="nav-livetest"     onclick="nav('livetest')">    <span class="sb-icon">⚡</span> Live Test</button>
+        <div class="sb-section">System</div>
+        <button class="sb-btn"        id="nav-model"        onclick="nav('model')">       <span class="sb-icon">🤖</span> Model Info</button>
+        <button class="sb-btn"        id="nav-logs"         onclick="nav('logs')">        <span class="sb-icon">📋</span> Audit Logs</button>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-user-name">Admin User</div>
+        <div class="sb-user-role">Super Admin · Full Access</div>
+        <button class="logout-btn" onclick="doLogout()">⎋ Logout</button>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <main class="main-content">
+
+      <!-- ① OVERVIEW -->
+      <div class="page active" id="page-overview">
+        <div class="page-header">
+          <div><div class="page-title">Dashboard Overview</div><div class="page-sub">Real-time fraud detection metrics</div></div>
+          <div class="live-pill"><div class="pulse"></div> Live Monitoring</div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi bl"><div class="kpi-icon">📊</div><div class="kpi-label">Total Analyzed</div><div class="kpi-val" id="kpiTotal">0</div><div class="kpi-note">↑ Updated live</div></div>
+          <div class="kpi gr"><div class="kpi-icon">✅</div><div class="kpi-label">Cleared</div><div class="kpi-val" id="kpiCleared">0</div><div class="kpi-note">Legitimate transactions</div></div>
+          <div class="kpi rd"><div class="kpi-icon">🚨</div><div class="kpi-label">Blocked</div><div class="kpi-val" id="kpiBlocked">0</div><div class="kpi-note">Fraud detected</div></div>
+          <div class="kpi am"><div class="kpi-icon">📈</div><div class="kpi-label">Fraud Rate</div><div class="kpi-val" id="kpiFraudRate">0%</div><div class="kpi-note">Of total volume</div></div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Recent Transactions</span>
+              <button class="card-action" onclick="nav('transactions')">View All →</button>
+            </div>
+            <div class="tbl-wrap">
+              <table><thead><tr><th>TXN ID</th><th>Time</th><th>Fraud Prob</th><th>Status</th></tr></thead>
+              <tbody id="overviewTbody"></tbody></table>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:0">
+              <div class="card-header"><span class="card-title">Fraud Rate Gauge</span></div>
+              <div class="gauge-wrap">
+                <div class="gauge-big" id="gaugeVal">0%</div>
+                <div class="gauge-lbl">Current fraud detection rate</div>
+                <div class="g-bar"><div class="g-fill" id="gaugeFill"></div></div>
+                <div class="g-ticks"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+              </div>
+              <div class="m-row"><span class="m-key">Model</span><span class="m-val">Logistic Regression</span></div>
+              <div class="m-row"><span class="m-key">Threshold</span><span class="m-val" style="color:#d97706">0.14 (F1-optimized)</span></div>
+              <div class="m-row"><span class="m-key">ROC-AUC</span><span class="m-val" style="color:#16a34a">97.2%</span></div>
+              <div class="m-row" style="padding-bottom:16px"><span class="m-key">API Status</span><span class="m-val" style="color:#16a34a">● Online</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ② TRANSACTIONS -->
+      <div class="page" id="page-transactions">
+        <div class="page-header">
+          <div><div class="page-title">All Transactions</div><div class="page-sub">Complete audit trail of analyzed transactions</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Transaction Log — <span id="txnCount">0</span> records</span>
+            <button class="card-action" onclick="clearTxns()">Clear Log</button>
+          </div>
+          <div class="tbl-wrap">
+            <table><thead><tr><th>#</th><th>TXN ID</th><th>Timestamp</th><th>Fraud Prob</th><th>Risk Level</th><th>Status</th></tr></thead>
+            <tbody id="allTbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ③ LIVE TEST -->
+      <div class="page" id="page-livetest">
+        <div class="page-header">
+          <div><div class="page-title">Live Test</div><div class="page-sub">Analyze a transaction via the FastAPI ML model</div></div>
+        </div>
+        <div class="two-col-test">
+
+          <!-- LEFT FORM -->
+          <div class="card" style="margin-bottom:0">
+            <div class="card-header"><span class="card-title">Transaction Details</span></div>
+
+            <!-- MODE TABS -->
+            <div style="display:flex;border-bottom:1px solid #e2e8f0;">
+              <button id="tab-manual" onclick="switchTestTab('manual')"
+                style="flex:1;padding:12px;background:#eff6ff;border:none;border-bottom:2px solid #2563eb;font-family:var(--sans);font-size:.85rem;font-weight:700;color:#2563eb;cursor:pointer;">
+                ✏️ Manual Entry
+              </button>
+              <button id="tab-csv" onclick="switchTestTab('csv')"
+                style="flex:1;padding:12px;background:white;border:none;border-bottom:2px solid transparent;font-family:var(--sans);font-size:.85rem;font-weight:600;color:#64748b;cursor:pointer;">
+                📂 CSV Upload
+              </button>
+            </div>
+
+            <!-- ── MANUAL TAB ── -->
+            <div id="panel-manual">
+
+              <!-- CARD — user enters -->
+              <div class="sec-label user-lbl">✏️ Card Details — Enter Manually</div>
+              <div class="fg2">
+                <div class="ff"><label>Card Number</label><input id="f_card" placeholder="4111 1111 1111 1111" oninput="syncLast4(); checkManualReady()"/></div>
+                <div class="ff"><label>Card Holder Name</label><input id="f_holder" placeholder="JOHN DOE"/></div>
+              </div>
+              <div class="fg3" style="padding-top:0">
+                <div class="ff"><label>Expiry (MM/YY)</label><input id="f_expiry" placeholder="09/27" maxlength="5"/></div>
+                <div class="ff"><label>CVV</label><input id="f_cvv" type="password" placeholder="•••" maxlength="4"/></div>
+                <div class="ff"><label>Card Type</label>
+                  <select id="f_ctype">
+                    <option>VISA</option><option>MASTERCARD</option><option>RUPAY</option><option>AMEX</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- TRANSACTION — user enters -->
+              <div class="sec-label user-lbl">✏️ Transaction Info — Enter Manually</div>
+              <div class="fg2">
+                <div class="ff"><label>Amount (₹)</label><input id="f_amount" type="number" placeholder="1500" min="1" oninput="checkManualReady()"/></div>
+                <div class="ff"><label>Card Last 4 Digits</label><input id="f_last4" class="auto" placeholder="auto from card" readonly/></div>
+              </div>
+              <div class="fg2" style="padding-top:0">
+                <div class="ff"><label>Merchant Name</label><input id="f_merchant" placeholder="Amazon India"/></div>
+                <div class="ff"><label>Merchant Category</label>
+                  <select id="f_mcat">
+                    <option>E-Commerce</option><option>Food & Dining</option><option>Travel</option>
+                    <option>Electronics</option><option>Fuel</option><option>Jewellery</option><option>International</option>
+                  </select>
+                </div>
+              </div>
+              <div class="fg2" style="padding-top:0">
+                <div class="ff"><label>Is New Device?</label>
+                  <select id="f_new_device">
+                    <option value="0">No — Known Device ✓</option>
+                    <option value="1">Yes — New / Unrecognized ⚠</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- BACKEND AUTO -->
+              <div class="sec-label backend-lbl">🔒 Device & Location — Auto-fetched by Backend</div>
+              <div class="fg3" style="padding-bottom:6px">
+                <div class="ff"><label>IP Address</label><input class="auto" placeholder="auto-detected" readonly/></div>
+                <div class="ff"><label>Device Type</label><input class="auto" placeholder="auto-detected" readonly/></div>
+                <div class="ff"><label>Location</label><input class="auto" placeholder="auto-detected" readonly/></div>
+              </div>
+
+              <div class="sec-label backend-lbl">🔒 Velocity Signals — Auto-calculated by Backend</div>
+              <div class="fg3" style="padding-bottom:6px">
+                <div class="ff"><label>TXN Count / Hr</label><input class="auto" placeholder="auto-calc" readonly/></div>
+                <div class="ff"><label>Last TXN (mins)</label><input class="auto" placeholder="auto-calc" readonly/></div>
+                <div class="ff"><label>TXN Hour</label><input class="auto" placeholder="auto-calc" readonly/></div>
+              </div>
+
+              <!-- Clear button -->
+              <div style="padding:0 20px 14px;display:flex;justify-content:flex-end">
+                <button onclick="clearManual()" class="ss-btn ss-clear">✕ Clear Form</button>
+              </div>
+
+            </div>
+
+            <!-- ── CSV TAB ── -->
+            <div id="panel-csv" style="display:none">
+              <div style="padding:16px 20px">
+
+                <!-- Upload zone -->
+                <div style="border:1.5px dashed #cbd5e1;border-radius:10px;padding:16px;background:#f8fafc">
+                  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+                    <div>
+                      <div style="font-size:.85rem;font-weight:700;color:#334155">📂 Upload CSV File</div>
+                      <div style="font-size:.75rem;font-weight:500;color:#64748b;margin-top:3px">Must contain V1–V28 columns. All rows will be analyzed at once.</div>
+                    </div>
+                    <label style="padding:9px 16px;background:#2563eb;color:white;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(37,99,235,.3)">
+                      Choose CSV
+                      <input type="file" accept=".csv" id="csvUpload" onchange="handleCSVUpload(event)" style="display:none"/>
+                    </label>
+                  </div>
+                  <div id="csvFileInfo" style="display:none;margin-top:10px;font-size:.78rem;font-weight:600;color:#16a34a"></div>
+                </div>
+
+                <!-- Analyze All button -->
+                <button id="csvAnalyzeBtn" onclick="analyzeAllCSV()" disabled
+                  style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#16a34a,#15803d);border:none;border-radius:10px;color:white;font-family:var(--sans);font-size:.9rem;font-weight:700;cursor:pointer;opacity:.4;transition:all .2s;box-shadow:0 2px 8px rgba(22,163,74,.2)">
+                  <span id="csvBtnText">⚡ Analyze All Transactions</span>
+                  <span id="csvBtnSpinner" style="display:none">Analyzing...</span>
+                </button>
+
+                <!-- Summary bar -->
+                <div id="csvSummary" style="display:none;margin-top:12px;display:none;gap:0;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+                  <div style="display:flex">
+                    <div style="flex:1;padding:12px 16px;background:#f0fdf4;border-right:1px solid #e2e8f0;text-align:center">
+                      <div style="font-size:1.4rem;font-weight:800;color:#16a34a" id="csvCleared">0</div>
+                      <div style="font-size:.7rem;font-weight:700;color:#64748b">CLEARED</div>
+                    </div>
+                    <div style="flex:1;padding:12px 16px;background:#fef2f2;border-right:1px solid #e2e8f0;text-align:center">
+                      <div style="font-size:1.4rem;font-weight:800;color:#ef4444" id="csvBlocked">0</div>
+                      <div style="font-size:.7rem;font-weight:700;color:#64748b">BLOCKED</div>
+                    </div>
+                    <div style="flex:1;padding:12px 16px;background:#f8fafc;text-align:center">
+                      <div style="font-size:1.4rem;font-weight:800;color:#334155" id="csvTotal">0</div>
+                      <div style="font-size:.7rem;font-weight:700;color:#64748b">TOTAL</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Results table -->
+                <div id="csvResultWrap" style="display:none;margin-top:12px;max-height:320px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:10px">
+                  <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+                    <thead>
+                      <tr style="background:#f1f5f9;position:sticky;top:0;z-index:1">
+                        <th style="padding:9px 12px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0">#</th>
+                        <th style="padding:9px 12px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0">V1</th>
+                        <th style="padding:9px 12px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0">V9</th>
+                        <th style="padding:9px 12px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0">V14</th>
+                        <th style="padding:9px 12px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0">FRAUD PROB</th>
+                        <th style="padding:9px 12px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0">STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody id="csvResultTbody"></tbody>
+                  </table>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- RUN BUTTON — shared -->
+            <div class="run-wrap" style="border-top:1px solid #e2e8f0;padding-top:16px">
+              <button class="run-btn" id="runBtn" onclick="runTest()" disabled>
+                <span class="btn-text">⚡ Analyze Transaction</span>
+                <div class="spinner"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card" style="margin-bottom:0">
+              <div class="card-header"><span class="card-title">ML Risk Signals (V1–V28)</span></div>
+              <div id="mlWrap"><div class="placeholder-msg">Load a sample to preview signals</div></div>
+            </div>
+            <div class="card" style="margin-bottom:0">
+              <div class="card-header"><span class="card-title">Detection Result</span></div>
+              <div id="resultPlaceholder"><div class="placeholder-msg">Result will appear after analysis</div></div>
+              <div class="result-box" id="resultBox">
+                <div class="rb-title" id="rb_title"></div>
+                <div class="rb-sub" id="rb_sub"></div>
+                <div class="rb-meta">
+                  <div class="rb-meta-item"><div class="rmi-label">Card</div><div class="rmi-val" id="rm_card">—</div></div>
+                  <div class="rb-meta-item"><div class="rmi-label">Amount</div><div class="rmi-val" id="rm_amt">—</div></div>
+                  <div class="rb-meta-item"><div class="rmi-label">Merchant</div><div class="rmi-val" id="rm_merchant">—</div></div>
+                  <div class="rb-meta-item"><div class="rmi-label">New Device</div><div class="rmi-val" id="rm_device">—</div></div>
+                  <div class="rb-meta-item"><div class="rmi-label">Risk Level</div><div class="rmi-val" id="rm_risk">—</div></div>
+                  <div class="rb-meta-item"><div class="rmi-label">Action</div><div class="rmi-val" id="rm_action">—</div></div>
+                </div>
+                <div class="prob-row"><span>Fraud Probability Score</span><span id="rb_prob">0%</span></div>
+                <div class="prob-bar"><div class="prob-fill" id="rb_fill"></div></div>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom:0">
+              <div class="card-header"><span class="card-title">API Response</span></div>
+              <div style="padding:14px"><div class="api-box" id="apiBox">// Waiting for analysis...
+
+POST http://127.0.0.1:8000/predict</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ④ MODEL INFO -->
+      <div class="page" id="page-model">
+        <div class="page-header">
+          <div><div class="page-title">Model Information</div><div class="page-sub">ML model configuration and performance metrics</div></div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Model Configuration</span></div>
+            <div class="m-row"><span class="m-key">Algorithm</span><span class="m-val">Logistic Regression</span></div>
+            <div class="m-row"><span class="m-key">Solver</span><span class="m-val">lbfgs</span></div>
+            <div class="m-row"><span class="m-key">Max Iterations</span><span class="m-val">1000</span></div>
+            <div class="m-row"><span class="m-key">Class Weight</span><span class="m-val">balanced</span></div>
+            <div class="m-row"><span class="m-key">Random State</span><span class="m-val">42</span></div>
+            <div class="m-row"><span class="m-key">Scaler</span><span class="m-val">StandardScaler</span></div>
+            <div class="m-row"><span class="m-key">Threshold</span><span class="m-val" style="color:#d97706">0.14 (F1-optimized)</span></div>
+            <div class="m-row"><span class="m-key">Features</span><span class="m-val">V1 — V28 (28 PCA signals)</span></div>
+            <div class="m-row"><span class="m-key">Train Size</span><span class="m-val">80% of 284,807 rows</span></div>
+            <div class="m-row" style="padding-bottom:16px"><span class="m-key">Test Size</span><span class="m-val">20% of 284,807 rows</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Performance Metrics</span></div>
+            <div class="m-row"><span class="m-key">ROC-AUC</span><span class="m-val" style="color:#16a34a">97.2%</span></div>
+            <div class="m-row"><span class="m-key">Avg Precision</span><span class="m-val" style="color:#16a34a">73.8%</span></div>
+            <div class="m-row"><span class="m-key">F1 Score</span><span class="m-val" style="color:#16a34a">Optimized via threshold</span></div>
+            <div class="m-row"><span class="m-key">Dataset</span><span class="m-val">creditcard.csv (Kaggle)</span></div>
+            <div class="m-row"><span class="m-key">Fraud Ratio</span><span class="m-val">0.17% (highly imbalanced)</span></div>
+            <div class="m-row"><span class="m-key">Model File</span><span class="m-val">artifacts/model.pkl</span></div>
+            <div class="m-row" style="padding-bottom:16px"><span class="m-key">API Server</span><span class="m-val" id="apiStatus" style="color:#d97706">Checking...</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⑤ AUDIT LOGS -->
+      <div class="page" id="page-logs">
+        <div class="page-header">
+          <div><div class="page-title">Audit Logs</div><div class="page-sub">System event log and transaction history</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">System Logs</span>
+            <button class="card-action" onclick="clearLogs()">Clear</button>
+          </div>
+          <div id="logContainer"><div class="placeholder-msg">No logs yet</div></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+let txns=[], logs=[], testPayload=null;
+
+const LABELS=['VEL_SCORE','MERCH_RISK','DEV_TRUST','GEO_ANOM','TXN_HOUR','CARD_AGE','PREV_DECL','AMT_RATIO','IP_RISK','BIN_RISK','TXN_FREQ','AUTH_SCR','SESS_LEN','ROUTE_RSK','MCC_RISK','CNTRY_RSK','ACCT_AGE','AVG_TXN','DEV_FP','NET_TYPE','3DS_SCR','MERCH_CAT','RETRY_CNT','BANK_RSK','POSTAL','NAME_MTC','CVV_SCR','BEHAV'];
+
+// Multiple test scenarios
+const SCENARIOS = {
+  // LEGITIMATE
+  legit1: {
+    label:'UPI Payment', merchant:'Amazon India', category:'E-Commerce', amount:'1499', last4:'1111', card:'4111 1111 1111 1111', holder:'Rahul Sharma', expiry:'09/27', cvv:'737', ctype:'VISA', newDevice:'0',
+    payload:{V1:-1.3598,V2:-0.0728,V3:2.5363,V4:1.3782,V5:-0.3383,V6:0.4624,V7:0.2396,V8:0.0987,V9:0.3638,V10:0.0908,V11:-0.5516,V12:-0.6178,V13:-0.9914,V14:-0.3112,V15:1.4682,V16:-0.4704,V17:0.2080,V18:0.0258,V19:0.4040,V20:0.2514,V21:-0.0183,V22:0.2778,V23:-0.1105,V24:0.0669,V25:0.1285,V26:-0.1891,V27:0.1336,V28:-0.0211}
+  },
+  legit2: {
+    label:'Food Order', merchant:'Swiggy', category:'Food & Dining', amount:'350', last4:'4242', card:'4242 4242 4242 4242', holder:'Priya Patel', expiry:'11/26', cvv:'123', ctype:'VISA', newDevice:'0',
+    payload:{V1:-2.26,V2:-0.07,V3:1.98,V4:0.91,V5:-0.28,V6:0.38,V7:0.19,V8:0.08,V9:0.29,V10:0.07,V11:-0.44,V12:-0.51,V13:-0.82,V14:-0.25,V15:1.21,V16:-0.38,V17:0.17,V18:0.02,V19:0.33,V20:0.20,V21:-0.01,V22:0.22,V23:-0.09,V24:0.05,V25:0.10,V26:-0.15,V27:0.10,V28:-0.01}
+  },
+  legit3: {
+    label:'Fuel Payment', merchant:'HP Petrol Pump', category:'Fuel', amount:'2000', last4:'5678', card:'5500 0055 5555 5678', holder:'Amit Kumar', expiry:'06/28', cvv:'456', ctype:'MASTERCARD', newDevice:'0',
+    payload:{V1:-2.44,V2:-0.09,V3:2.21,V4:1.12,V5:-0.31,V6:0.41,V7:0.21,V8:0.09,V9:0.32,V10:0.08,V11:-0.48,V12:-0.55,V13:-0.88,V14:-0.27,V15:1.31,V16:-0.41,V17:0.18,V18:0.02,V19:0.36,V20:0.22,V21:-0.01,V22:0.24,V23:-0.09,V24:0.05,V25:0.11,V26:-0.16,V27:0.11,V28:-0.01}
+  },
+  legit4: {
+    label:'Travel Booking', merchant:'MakeMyTrip', category:'Travel', amount:'8500', last4:'9012', card:'6011 0009 9013 9012', holder:'Sneha Reddy', expiry:'03/27', cvv:'789', ctype:'VISA', newDevice:'0',
+    payload:{V1:-1.42,V2:-0.05,V3:1.76,V4:0.88,V5:-0.22,V6:0.31,V7:0.15,V8:0.06,V9:0.26,V10:0.06,V11:-0.38,V12:-0.43,V13:-0.71,V14:-0.21,V15:1.08,V16:-0.31,V17:0.14,V18:0.01,V19:0.28,V20:0.17,V21:-0.01,V22:0.19,V23:-0.07,V24:0.04,V25:0.09,V26:-0.13,V27:0.09,V28:-0.01}
+  },
+  // FRAUDULENT
+  fraud1: {
+    label:'Intl Jewellers NYC', merchant:'Intl Jewellers NYC', category:'International', amount:'94500', last4:'9903', card:'5425 2334 3010 9903', holder:'Unknown User', expiry:'03/25', cvv:'000', ctype:'MASTERCARD', newDevice:'1',
+    payload:{V1:-3.04,V2:3.11,V3:-4.57,V4:1.63,V5:-1.22,V6:-0.01,V7:-1.39,V8:0.26,V9:-2.13,V10:-3.84,V11:0.57,V12:-5.35,V13:1.60,V14:-5.32,V15:0.06,V16:-1.06,V17:-0.68,V18:-0.12,V19:-2.24,V20:0.97,V21:0.36,V22:0.49,V23:-0.14,V24:-0.58,V25:0.38,V26:0.27,V27:0.40,V28:0.21}
+  },
+  fraud2: {
+    label:'Crypto Exchange 3AM', merchant:'CryptoFast Exchange', category:'International', amount:'185000', last4:'3344', card:'4532 1234 5678 3344', holder:'Unknown User', expiry:'01/24', cvv:'000', ctype:'VISA', newDevice:'1',
+    payload:{V1:1.75,V2:2.44,V3:-3.12,V4:0.53,V5:-0.43,V6:-0.33,V7:-1.82,V8:0.48,V9:-0.53,V10:-4.01,V11:2.65,V12:-5.21,V13:1.41,V14:-5.97,V15:0.81,V16:-2.96,V17:-4.20,V18:0.32,V19:-2.65,V20:1.46,V21:0.39,V22:0.77,V23:-0.06,V24:-0.93,V25:-0.08,V26:0.04,V27:0.63,V28:0.24}
+  },
+  fraud3: {
+    label:'Unknown Merchant High Velocity', merchant:'Unknown Merchant', category:'International', amount:'67000', last4:'7788', card:'5425 9876 5432 7788', holder:'Unknown User', expiry:'02/23', cvv:'000', ctype:'MASTERCARD', newDevice:'1',
+    payload:{V1:-2.31,V2:1.95,V3:-1.61,V4:3.99,V5:-0.52,V6:-1.43,V7:-2.10,V8:0.88,V9:-2.23,V10:-5.02,V11:3.63,V12:-6.61,V13:1.59,V14:-7.67,V15:0.35,V16:-5.83,V17:-4.41,V18:0.11,V19:-3.66,V20:1.85,V21:0.47,V22:0.62,V23:0.04,V24:-1.11,V25:-0.12,V26:0.09,V27:0.77,V28:0.31}
+  },
+  fraud4: {
+    label:'Foreign ATM Withdrawal', merchant:'ATM Dubai Airport', category:'International', amount:'45000', last4:'5566', card:'4111 9876 1234 5566', holder:'Unknown User', expiry:'06/22', cvv:'000', ctype:'VISA', newDevice:'1',
+    payload:{V1:-0.49,V2:0.85,V3:-0.17,V4:0.95,V5:0.10,V6:-0.17,V7:-1.11,V8:0.11,V9:-0.55,V10:-2.55,V11:1.44,V12:-3.28,V13:0.24,V14:-4.07,V15:-0.46,V16:-2.20,V17:-2.53,V18:0.62,V19:-1.06,V20:0.73,V21:0.25,V22:0.17,V23:0.01,V24:-0.21,V25:0.01,V26:-0.24,V27:0.07,V28:0.00}
+  }
+};
+const SAMPLES={legit:SCENARIOS.legit1.payload, fraud:SCENARIOS.fraud1.payload};
+
+const MOCK=[
+  {id:'pay_A1B2C3D4',time:'09:14:32',prob:.82,fraud:true},
+  {id:'pay_E5F6G7H8',time:'09:15:01',prob:.03,fraud:false},
+  {id:'pay_I9J0K1L2',time:'09:16:44',prob:.91,fraud:true},
+  {id:'pay_M3N4O5P6',time:'09:17:12',prob:.12,fraud:false},
+  {id:'pay_Q7R8S9T0',time:'09:18:33',prob:.67,fraud:true},
+  {id:'pay_U1V2W3X4',time:'09:19:05',prob:.04,fraud:false},
+  {id:'pay_Y5Z6A7B8',time:'09:20:22',prob:.02,fraud:false},
+  {id:'pay_C9D0E1F2',time:'09:21:47',prob:.88,fraud:true},
+];
+
+function doLogin(){
+  const u=document.getElementById('uname').value.trim();
+  const p=document.getElementById('upass').value.trim();
+  if(u==='admin'&&p==='admin'){
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    initDashboard();
+  } else {
+    const e=document.getElementById('loginErr');
+    e.classList.add('show');
+    setTimeout(()=>e.classList.remove('show'),3000);
+  }
+}
+
+function doLogout(){
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('uname').value='';
+  document.getElementById('upass').value='';
+}
+
+function nav(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+}
+
+function initDashboard(){
+  txns=[...MOCK];
+  addLog('system','PayGuard Admin initialized');
+  addLog('system','Model loaded — artifacts/model.pkl');
+  addLog('system','FastAPI: http://127.0.0.1:8000');
+  MOCK.filter(t=>t.fraud).forEach(t=>addLog('fraud','BLOCKED: '+t.id+' — '+(t.prob*100).toFixed(1)+'%'));
+  MOCK.filter(t=>!t.fraud).forEach(t=>addLog('legit','CLEARED: '+t.id+' — '+(t.prob*100).toFixed(1)+'%'));
+  updateStats();
+  checkAPI();
+}
+
+function riskLevel(p){return p<.2?'LOW':p<.5?'MEDIUM':p<.75?'HIGH':'CRITICAL'}
+function riskColor(p){return p<.2?'#16a34a':p<.5?'#d97706':'#ef4444'}
+
+function updateStats(){
+  const total=txns.length,blocked=txns.filter(t=>t.fraud).length,cleared=total-blocked;
+  const rate=total>0?((blocked/total)*100).toFixed(1):0;
+  document.getElementById('kpiTotal').textContent=total;
+  document.getElementById('kpiBlocked').textContent=blocked;
+  document.getElementById('kpiCleared').textContent=cleared;
+  document.getElementById('kpiFraudRate').textContent=rate+'%';
+  document.getElementById('gaugeVal').textContent=rate+'%';
+  document.getElementById('txnCount').textContent=total;
+  setTimeout(()=>{document.getElementById('gaugeFill').style.width=Math.min(rate,100)+'%'},200);
+  renderOverviewTable(); renderAllTable(); renderLogs();
+}
+
+function renderOverviewTable(){
+  document.getElementById('overviewTbody').innerHTML=[...txns].reverse().slice(0,6).map(t=>`
+    <tr>
+      <td style="font-family:var(--mono);font-size:.75rem;color:#64748b">${t.id}</td>
+      <td>${t.time}</td>
+      <td style="color:${t.fraud?'#ef4444':'#16a34a'};font-weight:700">${(t.prob*100).toFixed(1)}%</td>
+      <td><span class="badge ${t.fraud?'blocked':'cleared'}">${t.fraud?'🚨 Blocked':'✅ Cleared'}</span></td>
+    </tr>`).join('');
+}
+
+function renderAllTable(){
+  document.getElementById('allTbody').innerHTML=[...txns].reverse().map((t,i)=>`
+    <tr>
+      <td style="color:#94a3b8">${txns.length-i}</td>
+      <td style="font-family:var(--mono);font-size:.75rem">${t.id}</td>
+      <td>${t.time}</td>
+      <td style="color:${t.fraud?'#ef4444':'#16a34a'};font-weight:700">${(t.prob*100).toFixed(1)}%</td>
+      <td style="color:${riskColor(t.prob)};font-weight:700">${riskLevel(t.prob)}</td>
+      <td><span class="badge ${t.fraud?'blocked':'cleared'}">${t.fraud?'🚨 Blocked':'✅ Cleared'}</span></td>
+    </tr>`).join('');
+}
+
+function clearTxns(){txns=[];addLog('system','Transaction log cleared by admin');updateStats()}
+
+function addLog(type,msg){
+  logs.unshift({type,msg,time:new Date().toTimeString().substr(0,8)});
+  if(logs.length>60)logs.pop();
+}
+
+function renderLogs(){
+  const c=document.getElementById('logContainer');
+  c.innerHTML=logs.length
+    ?logs.map(l=>`<div class="log-line"><span class="log-time">${l.time}</span><div class="log-dot ${l.type}"></div><span class="log-msg">${l.msg}</span></div>`).join('')
+    :'<div class="placeholder-msg">No logs yet</div>';
+}
+
+function clearLogs(){logs=[];renderLogs()}
+
+async function checkAPI(){
+  const el=document.getElementById('apiStatus');
+  try{
+    const r=await fetch('http://127.0.0.1:8000/');
+    el.textContent=r.ok?'● Online':'● Degraded';
+    el.style.color=r.ok?'#16a34a':'#d97706';
+  }catch{
+    el.textContent='● Offline';
+    el.style.color='#ef4444';
+  }
+}
+
+
+
+function setCardFieldsEditable(editable) {
+  const ids = ['f_card','f_holder','f_expiry','f_cvv'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if(editable) { el.removeAttribute('readonly'); el.classList.remove('auto'); el.placeholder = 'Enter value'; }
+    else { el.setAttribute('readonly', true); el.classList.add('auto'); }
+  });
+  const ctype = document.getElementById('f_ctype');
+  if(editable) { ctype.disabled = false; ctype.classList.remove('auto'); }
+  else { ctype.disabled = true; ctype.classList.add('auto'); }
+  const lbl = document.getElementById('cardSectionLabel');
+  if(editable) { lbl.textContent = '✏️ Card Details — Enter Manually'; lbl.className = 'sec-label user-lbl'; }
+  else { lbl.textContent = '🔒 Card Details — Auto-fetched by Backend'; lbl.className = 'sec-label backend-lbl'; }
+  document.getElementById('customV28Section').style.display = editable ? 'block' : 'none';
+  if(editable) buildV28Grid();
+}
+
+function buildV28Grid() {
+  const grid = document.getElementById('customV28Grid');
+  if(grid.children.length > 0) return; // already built
+  const LABELS=['VEL_SCORE','MERCH_RISK','DEV_TRUST','GEO_ANOM','TXN_HOUR','CARD_AGE','PREV_DECL','AMT_RATIO','IP_RISK','BIN_RISK','TXN_FREQ','AUTH_SCR','SESS_LEN','ROUTE_RSK','MCC_RISK','CNTRY_RSK','ACCT_AGE','AVG_TXN','DEV_FP','NET_TYPE','3DS_SCR','MERCH_CAT','RETRY_CNT','BANK_RSK','POSTAL','NAME_MTC','CVV_SCR','BEHAV'];
+  grid.innerHTML = Array.from({length:28},(_,i) => `
+    <div>
+      <div style="font-size:.6rem;font-weight:700;color:#64748b;margin-bottom:4px;font-family:var(--mono)">V${i+1}<br><span style="font-size:.52rem;color:#94a3b8">${LABELS[i]}</span></div>
+      <input id="cv${i+1}" type="number" step="0.01" value="0.00"
+        style="width:100%;border:1.5px solid #e2e8f0;border-radius:6px;padding:6px 6px;font-family:var(--mono);font-size:.72rem;font-weight:600;color:#0f172a;outline:none;text-align:center"
+        onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'"/>
+    </div>`).join('');
+}
+
+function fillRandomLegit() {
+  const vals = Object.values(SCENARIOS.legit1.payload);
+  vals.forEach((v,i) => { const el=document.getElementById('cv'+(i+1)); if(el) el.value=v.toFixed(4); });
+  testPayload = SCENARIOS.legit1.payload;
+  document.getElementById('runBtn').disabled = false;
+}
+
+function fillRandomFraud() {
+  const vals = Object.values(SCENARIOS.fraud1.payload);
+  vals.forEach((v,i) => { const el=document.getElementById('cv'+(i+1)); if(el) el.value=v.toFixed(4); });
+  testPayload = SCENARIOS.fraud1.payload;
+  document.getElementById('runBtn').disabled = false;
+}
+
+function getCustomPayload() {
+  const payload = {};
+  for(let i=1;i<=28;i++) {
+    const el = document.getElementById('cv'+i);
+    payload['V'+i] = el ? parseFloat(el.value)||0 : 0;
+  }
+  return payload;
+}
+
+function loadSample(key){
+  if(!key) return;
+
+  // CUSTOM MODE
+  if(key === 'custom') {
+    setCardFieldsEditable(true);
+    // clear form fields for manual entry
+    ['f_card','f_holder','f_expiry','f_amount','f_last4','f_merchant'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.value = '';
+    });
+    document.getElementById('f_cvv').value = '';
+    document.getElementById('mlWrap').innerHTML = '<div class="placeholder-msg">Fill V1–V28 values below, then click Analyze</div>';
+    document.getElementById('resultBox').className = 'result-box';
+    document.getElementById('resultPlaceholder').style.display = 'block';
+    document.getElementById('apiBox').textContent = '// Custom mode\n\nFill in your values and click Analyze';
+    document.getElementById('runBtn').disabled = false;
+    testPayload = null; // will be built from inputs
+    return;
+  }
+
+  // SAMPLE MODE
+  setCardFieldsEditable(false);
+  const s = SCENARIOS[key];
+  if(!s) return;
+  testPayload = s.payload;
+  document.getElementById('f_card').value    = s.card;
+  document.getElementById('f_holder').value  = s.holder;
+  document.getElementById('f_expiry').value  = s.expiry;
+  document.getElementById('f_cvv').value     = s.cvv;
+  document.getElementById('f_ctype').value   = s.ctype;
+  document.getElementById('f_amount').value  = s.amount;
+  document.getElementById('f_last4').value   = s.last4;
+  document.getElementById('f_merchant').value= s.merchant;
+  document.getElementById('f_mcat').value    = s.category;
+  document.getElementById('f_new_device').value = s.newDevice;
+  syncLast4();
+  document.getElementById('mlWrap').innerHTML='<div class="ml-grid">'+
+    Object.values(testPayload).map((v,i)=>`<div class="ml-chip"><span class="mcn">${LABELS[i]}</span><span class="mcv">${Number(v).toFixed(2)}</span></div>`).join('')+'</div>';
+  document.getElementById('resultBox').className='result-box';
+  document.getElementById('resultPlaceholder').style.display='block';
+  document.getElementById('rb_fill').style.width='0%';
+  document.getElementById('apiBox').textContent='// Sample loaded: '+type.toUpperCase()+'\n\nPOST http://127.0.0.1:8000/predict\n\n// Click Analyze to execute';
+  document.getElementById('runBtn').disabled=false;
+}
+
+function clearTestForm(){
+  testPayload=null;
+  const sel=document.getElementById('sampleSelect'); if(sel) sel.value='';
+  setCardFieldsEditable(false);
+  ['f_card','f_holder','f_expiry','f_cvv','f_amount','f_last4','f_merchant'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('mlWrap').innerHTML='<div class="placeholder-msg">Load a sample to preview signals</div>';
+  document.getElementById('resultBox').className='result-box';
+  document.getElementById('resultPlaceholder').style.display='block';
+  document.getElementById('rb_fill').style.width='0%';
+  document.getElementById('apiBox').textContent='// Waiting for analysis...\n\nPOST http://127.0.0.1:8000/predict';
+  document.getElementById('runBtn').disabled=true;
+}
+
+async function runTest(){
+  // Manual mode — no preloaded payload, use manual form
+  var isManualMode = document.getElementById('panel-manual').style.display !== 'none';
+  if(!testPayload && isManualMode) {
+    testPayload = getManualPayload();
+  }
+  if(!testPayload) return;
+  const btn=document.getElementById('runBtn');
+  btn.classList.add('loading');
+  document.getElementById('resultBox').className='result-box';
+  document.getElementById('resultPlaceholder').style.display='none';
+  const last4=document.getElementById('f_last4').value||'????';
+  const amt=document.getElementById('f_amount').value||'0';
+  const merchant=document.getElementById('f_merchant').value||'—';
+  const newDev=document.getElementById('f_new_device').value==='1';
+  try{
+    const res=await fetch('http://127.0.0.1:8000/predict',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(testPayload)
+    });
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const isFraud=data.fraud, prob=(data.probability*100).toFixed(1);
+    const rl=riskLevel(data.probability), rc=riskColor(data.probability);
+    document.getElementById('apiBox').textContent='// Response: 200 OK\n\n'+JSON.stringify(data,null,2);
+    const box=document.getElementById('resultBox');
+    box.className='result-box show '+(isFraud?'fraud':'legit');
+    document.getElementById('resultPlaceholder').style.display='none';
+    document.getElementById('rb_title').textContent=isFraud?'🚨 Transaction Blocked':'✅ Payment Approved';
+    document.getElementById('rb_sub').textContent=data.message;
+    document.getElementById('rm_card').textContent='•••• '+last4;
+    document.getElementById('rm_amt').textContent='₹'+Number(amt).toLocaleString('en-IN');
+    document.getElementById('rm_merchant').textContent=merchant;
+    document.getElementById('rm_device').textContent=newDev?'Yes ⚠':'No ✓';
+    document.getElementById('rm_device').style.color=newDev?'#ef4444':'#16a34a';
+    document.getElementById('rm_risk').textContent=rl;
+    document.getElementById('rm_risk').style.color=rc;
+    document.getElementById('rm_action').textContent=isFraud?'🔒 Block':'✅ Approve';
+    document.getElementById('rm_action').style.color=isFraud?'#ef4444':'#16a34a';
+    document.getElementById('rb_prob').textContent=prob+'%';
+    setTimeout(()=>{document.getElementById('rb_fill').style.width=prob+'%'},100);
+    const txnId='pay_'+Math.random().toString(36).substr(2,8).toUpperCase();
+    const now=new Date().toTimeString().substr(0,8);
+    txns.push({id:txnId,time:now,prob:data.probability,fraud:isFraud});
+    addLog(isFraud?'fraud':'legit',(isFraud?'BLOCKED':'CLEARED')+': '+txnId+' — '+prob+'%');
+    updateStats();
+  }catch(err){
+    document.getElementById('apiBox').textContent='// ERROR: '+err.message+'\n\n// Make sure FastAPI is running:\n// uvicorn app:app --reload';
+    document.getElementById('resultPlaceholder').style.display='block';
+  }finally{btn.classList.remove('loading')}
+}
+
+// ── CSV UPLOAD ──
+let csvRows = [];
+let selectedCSVRow = -1;
+
+function handleCSVUpload(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var lines = ev.target.result.trim().split('\n');
+    var headers = lines[0].split(',').map(function(h){ return h.trim(); });
+    csvRows = lines.slice(1).map(function(line, idx) {
+      var vals = line.split(',');
+      var row = { _index: idx + 1 };
+      headers.forEach(function(h, i){ row[h] = parseFloat(vals[i]) || 0; });
+      return row;
+    }).filter(function(r){ return r['V1'] !== undefined; });
+
+    var info = document.getElementById('csvFileInfo');
+    info.textContent = '✅ ' + file.name + ' — ' + csvRows.length + ' transactions loaded';
+    info.style.display = 'block';
+
+    // Enable analyze button
+    var btn = document.getElementById('csvAnalyzeBtn');
+    btn.disabled = false;
+    btn.style.opacity = '1';
+
+    // Reset results
+    document.getElementById('csvResultWrap').style.display = 'none';
+    document.getElementById('csvSummary').style.display = 'none';
+  };
+  reader.readAsText(file);
+}
+
+async function analyzeAllCSV() {
+  if (!csvRows.length) return;
+
+  var btn    = document.getElementById('csvAnalyzeBtn');
+  var btnTxt = document.getElementById('csvBtnText');
+  var btnSpn = document.getElementById('csvBtnSpinner');
+  btn.disabled = true;
+  btnTxt.style.display = 'none';
+  btnSpn.style.display = 'inline';
+
+  var results = [];
+  for (var i = 0; i < csvRows.length; i++) {
+    var row = csvRows[i];
+    var payload = {};
+    for (var j = 1; j <= 28; j++) { payload['V' + j] = row['V' + j] || 0; }
+    try {
+      var res = await fetch('http://127.0.0.1:8000/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      var data = await res.json();
+      results.push({ row: row, data: data });
+    } catch(err) {
+      results.push({ row: row, data: { fraud: false, probability: 0, message: 'Error' } });
+    }
+  }
+
+  // Render results table
+  var tbody = document.getElementById('csvResultTbody');
+  tbody.innerHTML = '';
+  var cleared = 0, blocked = 0;
+
+  results.forEach(function(r) {
+    var isFraud = r.data.fraud;
+    var prob    = (r.data.probability * 100).toFixed(1);
+    if (isFraud) blocked++; else cleared++;
+
+    var tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid #f1f5f9';
+    tr.innerHTML =
+      '<td style="padding:9px 12px;font-weight:700;color:#64748b">' + r.row._index + '</td>' +
+      '<td style="padding:9px 12px;font-family:var(--mono);font-weight:600">' + (r.row.V1||0).toFixed(2) + '</td>' +
+      '<td style="padding:9px 12px;font-family:var(--mono);font-weight:600">' + (r.row.V9||0).toFixed(2) + '</td>' +
+      '<td style="padding:9px 12px;font-family:var(--mono);font-weight:600">' + (r.row.V14||0).toFixed(2) + '</td>' +
+      '<td style="padding:9px 12px;font-weight:700;color:' + (isFraud?'#ef4444':'#16a34a') + '">' + prob + '%</td>' +
+      '<td style="padding:9px 12px"><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:700;' +
+        (isFraud ? 'background:#fef2f2;color:#ef4444;border:1px solid #fecaca' : 'background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0') + '">' +
+        (isFraud ? '🚨 Blocked' : '✅ Cleared') + '</span></td>';
+    tbody.appendChild(tr);
+
+    // Add to transaction log
+    var txnId = 'pay_' + Math.random().toString(36).substr(2,8).toUpperCase();
+    txns.push({ id: txnId, time: new Date().toTimeString().substr(0,8), prob: r.data.probability, fraud: isFraud });
+    addLog(isFraud?'fraud':'legit', (isFraud?'BLOCKED':'CLEARED') + ': ' + txnId + ' — ' + prob + '%');
+  });
+
+  // Show summary
+  document.getElementById('csvCleared').textContent = cleared;
+  document.getElementById('csvBlocked').textContent = blocked;
+  document.getElementById('csvTotal').textContent   = results.length;
+  document.getElementById('csvSummary').style.display  = 'flex';
+  document.getElementById('csvResultWrap').style.display = 'block';
+
+  updateStats();
+
+  btn.disabled = false;
+  btnTxt.style.display = 'inline';
+  btnSpn.style.display = 'none';
+}
+
+// ── TAB SWITCHING ──
+function switchTestTab(tab) {
+  var isManual = tab === 'manual';
+
+  document.getElementById('panel-manual').style.display = isManual ? 'block' : 'none';
+  document.getElementById('panel-csv').style.display    = isManual ? 'none'  : 'block';
+
+  // Run button only for manual tab
+  var runWrap = document.getElementById('runBtn').parentElement;
+  runWrap.style.display = isManual ? 'block' : 'none';
+
+  // Tab styling
+  var tManual = document.getElementById('tab-manual');
+  var tCsv    = document.getElementById('tab-csv');
+
+  tManual.style.background   = isManual ? '#eff6ff' : 'white';
+  tManual.style.color        = isManual ? '#2563eb' : '#64748b';
+  tManual.style.borderBottom = isManual ? '2px solid #2563eb' : '2px solid transparent';
+  tManual.style.fontWeight   = isManual ? '700' : '600';
+
+  tCsv.style.background   = !isManual ? '#eff6ff' : 'white';
+  tCsv.style.color        = !isManual ? '#2563eb' : '#64748b';
+  tCsv.style.borderBottom = !isManual ? '2px solid #2563eb' : '2px solid transparent';
+  tCsv.style.fontWeight   = !isManual ? '700' : '600';
+
+  // Reset state
+  testPayload = null;
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('resultBox').className = 'result-box';
+  document.getElementById('resultPlaceholder').style.display = 'block';
+  document.getElementById('mlWrap').innerHTML = '<div class="placeholder-msg">Enter card details or upload CSV to begin</div>';
+  document.getElementById('apiBox').textContent = '// Waiting for analysis...\n\nPOST http://127.0.0.1:8000/predict';
+  document.getElementById('rb_fill').style.width = '0%';
+}
+
+
+// ── MANUAL FORM FUNCTIONS ──
+function checkManualReady() {
+  var card   = (document.getElementById('f_card').value || '').replace(/\s/g,'');
+  var amount = (document.getElementById('f_amount').value || '').trim();
+  var ready  = card.length >= 15 && amount.length > 0;
+  document.getElementById('runBtn').disabled = !ready;
+}
+
+function clearManual() {
+  testPayload = null;
+  var fields = ['f_card','f_holder','f_expiry','f_cvv','f_amount','f_last4','f_merchant'];
+  fields.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('f_new_device').value = '0';
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('resultBox').className = 'result-box';
+  document.getElementById('resultPlaceholder').style.display = 'block';
+  document.getElementById('rb_fill').style.width = '0%';
+  document.getElementById('mlWrap').innerHTML = '<div class="placeholder-msg">Enter card details or upload CSV to begin</div>';
+  document.getElementById('apiBox').textContent = '// Waiting for analysis...\n\nPOST http://127.0.0.1:8000/predict';
+}
+
+function syncLast4() {
+  var card = (document.getElementById('f_card').value || '').replace(/\s/g,'');
+  document.getElementById('f_last4').value = card.length >= 4 ? card.slice(-4) : '';
+}
+
+function getManualPayload() {
+  // In real system backend computes V1-V28 from card+transaction data via PCA
+  // For demo we use legit1 base payload
+  return SCENARIOS.legit1.payload;
+}
+
+</script>
+</body>
+</html>

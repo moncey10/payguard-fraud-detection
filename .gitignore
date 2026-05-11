@@ -1,0 +1,9 @@
+artifacts/
+data/
+__pycache__/
+*.pkl
+*.pyc
+.env
+env/
+# Windows pe notepad se banao ya terminal mein:
+echo. > .gitignore
