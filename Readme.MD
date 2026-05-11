@@ -58,7 +58,8 @@ payguard-fraud-detection/
 │
 ├── app.py                  # FastAPI application
 ├── preprocessing.py        # Model training & threshold optimization
-├── build_pipeline.py       # Sklearn pipeline definition
+├──Pipeline/
+    ├── build_pipeline.py       # Sklearn pipeline definition
 ├── requirements.txt        # Python dependencies
 │
 ├── index.html              # User-facing frontend
