@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import pickle
 import pandas as pd
+from fastapi.responses import HTMLResponse
 
 app = FastAPI(
     title="Credit Card Fraud Detection API",
@@ -51,9 +52,10 @@ class PredictionResponse(BaseModel):
     probability: float
     message: str
 
-@app.get("/")
-def health_check():
-    return {"status": "healthy", "message": "Fraud detection API is running"}
+@app.get("/", response_class=HTMLResponse)
+async def home():
+    with open("index.html", "r", encoding="utf-8") as f:
+        return f.read()
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(transaction: Transaction):
